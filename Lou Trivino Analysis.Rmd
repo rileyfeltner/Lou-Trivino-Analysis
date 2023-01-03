@@ -1,0 +1,507 @@
+---
+title: "Lou Trivino"
+author: "Riley Feltner"
+date: "12/30/2022"
+output: html_document
+---
+
+```{r}
+Pitches <- read.csv("Individual Pitches 2022 RHP.csv")
+Pitches1 <- read.csv("Lou Trivino 2021.csv")
+Pitches2 <- read.csv("Lou Trivino 2019.csv")
+```
+
+#2022 Data
+```{r}
+Trivino <- filter(Pitches, pitcher == "L. Trivino")
+Trivino <- Trivino[Trivino$type != "",]
+
+class(Trivino$HorzBrk)
+
+Trivino$IndVertBrk <- as.numeric(as.character(Trivino$IndVertBrk))
+Trivino$HorzBrk <- as.numeric(as.character(Trivino$Horz))
+Trivino$date <- gsub(".{5}$", "", Trivino$date)
+
+#OAK and NYY
+OAK <- Trivino[-c(1:357),]
+NYY <- Trivino[-c(358:961),]
+```
+
+#2021 Data
+```{r}
+Pitches1 <- Pitches1[Pitches1$type != "",]
+Pitches1$IndVertBrk <- as.numeric(as.character(Pitches1$IndVertBrk))
+Pitches1$HorzBrk <- as.numeric(as.character(Pitches1$Horz))
+
+```
+
+#2019 Data
+```{r}
+Pitches2 <- Pitches2[Pitches2$type != "",]
+Pitches2$IndVertBrk <- as.numeric(as.character(Pitches2$IndVertBrk))
+Pitches2$HorzBrk <- as.numeric(as.character(Pitches2$Horz))
+Pitches2$type <- gsub("Two Seamer", "Sinker", Pitches2$type)
+```
+
+
+#OAK and NYY Trivino Pitch Break Charts
+```{r}
+OAKMap <- ggplot(OAK, aes(x = HorzBrk, y = IndVertBrk, color = type))+
+  geom_point()+
+  xlim(-22, 22)+
+  ylim(-22, 22)+
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)+
+  theme_minimal()+
+  xlab("Horizontal Break")+
+  ylab("Vertical Break")+
+  labs(title = "2022 Lou Trivino OAK Pitch Break Chart",
+         caption = "Riley Feltner")
+
+OAKMap + 
+  scale_color_manual(values = c("Four Seamer" = "dodgerblue3"  , "Cutter" = "darkorange3", "Curveball" = "darkred", "Sinker" = "goldenrod3", "Slider" = "darkolivegreen3", "Changeup" = "darkorchid3"))
+
+
+NYYMap <- ggplot(NYY, aes(x = HorzBrk, y = IndVertBrk, color = type))+
+  geom_point()+
+  xlim(-22, 22)+
+  ylim(-22, 22)+
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)+
+  theme_minimal()+
+  xlab("Horizontal Break")+
+  ylab("Vertical Break")+
+  labs(title = "2022 Lou Trivino NYY Pitch Break Chart",
+         caption = "Riley Feltner")
+
+NYYMap+
+  scale_color_manual(values = c("Four Seamer" = "dodgerblue3"  , "Cutter" = "darkorange3", "Sinker" = "goldenrod3", "Slider" = "darkolivegreen3", "Changeup" = "darkorchid3")) 
+
+
+Map21 <- ggplot(Pitches1, aes(x = HorzBrk, y = IndVertBrk, color = type))+
+  geom_point()+
+  xlim(-22, 22)+
+  ylim(-22, 22)+
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)+
+  theme_minimal()+
+  xlab("Horizontal Break")+
+  ylab("Vertical Break")+
+  labs(title = "2021 Lou Trivino Pitch Break Chart",
+         caption = "Riley Feltner")
+
+Map21+
+  scale_color_manual(values = c("Four Seamer" = "dodgerblue3"  , "Cutter" = "darkorange3", "Sinker" = "goldenrod3", "Changeup" = "darkorchid3", "Curveball" = "darkred")) 
+
+
+All22 <- ggplot(Trivino, aes(x = HorzBrk, y = IndVertBrk, color = type))+
+  geom_point()+
+  xlim(-22, 22)+
+  ylim(-22, 22)+
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)+
+  theme_minimal()+
+  xlab("Horizontal Break")+
+  ylab("Vertical Break")+
+  labs(title = "2022 Lou Trivino Pitch Break Chart",
+         caption = "Riley Feltner")
+
+All22+
+  scale_color_manual(values = c("Four Seamer" = "dodgerblue3"  , "Cutter" = "darkorange3", "Curveball" = "darkred", "Sinker" = "goldenrod3", "Slider" = "darkolivegreen3", "Changeup" = "darkorchid3")) 
+
+
+Map19 <- ggplot(Pitches2, aes(x = HorzBrk, y = IndVertBrk, color = type))+
+  geom_point()+
+  xlim(-22, 22)+
+  ylim(-22, 22)+
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)+
+  theme_minimal()+
+  xlab("Horizontal Break")+
+  ylab("Vertical Break")+
+  labs(title = "2019 Lou Trivino Pitch Break Chart",
+         caption = "Riley Feltner")
+
+Map19+
+  scale_color_manual(values = c("Four Seamer" = "dodgerblue3"  , "Cutter" = "darkorange3", "Sinker" = "goldenrod3", "Changeup" = "darkorchid3", "Curveball" = "darkred")) 
+```
+#Get more Data
+```{r}
+TrivinoOAK <- scrape_statcast_savant_pitcher_all('2022-04-04', '2022-07-31', pitcherid = 642152)
+
+TrivinoNYY <- scrape_statcast_savant_pitcher_all('2022-08-01', '2022-12-1', pitcherid = 642152) #Not sure when last game was so set to 12/1
+
+unique(TrivinoOAK$pitch_type)
+unique(TrivinoNYY$pitch_type)
+TrivinoOAK <- TrivinoOAK[TrivinoOAK$pitch_type != "",]
+TrivinoNYY <- TrivinoNYY[TrivinoNYY$pitch_type != "",]
+
+TrivinoOAK <- TrivinoOAK[c(1,3,6,9,15,25,26,28,29,30,31)]
+TrivinoNYY <- TrivinoNYY[c(1,3,6,9,15,25,26,28,29,30,31)]
+```
+#Lou Trivino Heat Maps
+```{r}
+#OAK FB
+TrivinoOAKFF <- filter(TrivinoOAK, pitch_type == "FF")
+
+FFOAK <- ggplot(TrivinoOAKFF,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK Fastball Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+FFOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+
+#NYY FB
+TrivinoNYYFF <- filter(TrivinoNYY, pitch_type == "FF")
+
+FFNYY <- ggplot(TrivinoNYYFF,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 NYY Fastball Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+FFNYY + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+
+#OAK SL
+TrivinoOAKSL <- filter(TrivinoOAK, pitch_type == "SL")
+
+SLOAK <- ggplot(TrivinoOAKSL,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK Slider Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+SLOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+
+#NYYSL
+TrivinoNYYSL <- filter(TrivinoNYY, pitch_type == "SL")
+
+SLNYY <- ggplot(TrivinoNYYSL,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 NYY Slider Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+SLNYY + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+
+#OAKCT
+TrivinoOAKCT <- filter(TrivinoOAK, pitch_type == "FC")
+
+CTOAK <- ggplot(TrivinoOAKCT,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK Cutter Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+CTOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+
+#NYYCT
+TrivinoNYYCT <- filter(TrivinoNYY, pitch_type == "FC")
+
+CTNYY <- ggplot(TrivinoNYYCT,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 NYY Cutter Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+CTNYY + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+
+#OAKSI
+TrivinoOAKSI <- filter(TrivinoOAK, pitch_type == "SI")
+
+SIOAK <- ggplot(TrivinoOAKSI,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK Sinker Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+SIOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+#NYYSI
+TrivinoNYYSI <- filter(TrivinoNYY, pitch_type == "SI")
+
+SINYY <- ggplot(TrivinoNYYSI,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 NYY Sinker Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+SINYY + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+#OAKCH
+TrivinoOAKCH <- filter(TrivinoOAK, pitch_type == "CH")
+
+CHOAK <- ggplot(TrivinoOAKCH,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK Changeup Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+CHOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+#NYYCH
+TrivinoNYYCH <- filter(TrivinoNYY, pitch_type == "CH")
+
+CHNYY <- ggplot(TrivinoNYYCH,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 NYY Changeup Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+CHNYY + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+#OAKCB
+TrivinoOAKCB <- filter(TrivinoOAK, pitch_type == "CU")
+
+CBOAK <- ggplot(TrivinoOAKCB,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK Curveball Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+CBOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+```
+#Slider frequency by count OAK and NYY
+```{r}
+#SLIDER ----------------------------
+TwoStrike <- filter(TrivinoOAK, balls == "0" & strikes == "2" | balls == "1" & strikes == "2"
+                    | balls == "2", strikes == "2" | balls == "3", strikes == "2")
+sum(TwoStrike$pitch_type == "SL")
+51/152
+
+
+NonTwoStrike <- filter(TrivinoOAK, balls != "0" & strikes != "2" | balls != "1" & strikes != "2"
+                    | balls != "2", strikes != "2" | balls != "3", strikes != "2")
+sum(NonTwoStrike$pitch_type == "SL")
+47/421
+
+
+TwoStrikeNYY <- filter(TrivinoNYY, balls == "0" & strikes == "2" | balls == "1" & strikes == "2"
+                    | balls == "2", strikes == "2" | balls == "3", strikes == "2")
+sum(TwoStrikeNYY$pitch_type == "SL")
+53/94
+
+
+NonTwoStrikeNYY <- filter(TrivinoNYY, balls != "0" & strikes != "2" | balls != "1" & strikes != "2"
+                    | balls != "2", strikes != "2" | balls != "3", strikes != "2")
+sum(NonTwoStrikeNYY$pitch_type == "SL")
+86/293
+
+
+#CUTTER -----------------------------
+sum(TwoStrike$pitch_type == "FC")
+7/152
+
+sum(NonTwoStrike$pitch_type == "FC")
+80/421
+
+sum(TwoStrikeNYY$pitch_type == "FC")
+4/94
+
+sum(NonTwoStrikeNYY$pitch_type == "FC")
+50/293
+
+#SINKER ----------------------------
+sum(TwoStrike$pitch_type == "SI")
+14/152
+
+sum(NonTwoStrike$pitch_type == "SI")
+158/421
+
+sum(TwoStrikeNYY$pitch_type == "SI")
+9/94
+
+sum(NonTwoStrikeNYY$pitch_type == "SI")
+101/293
+
+#FASTBALL-----------------------
+sum(TwoStrike$pitch_type == "FF")
+47/152
+
+sum(NonTwoStrike$pitch_type == "FF")
+78/421
+
+sum(TwoStrikeNYY$pitch_type == "FF")
+16/94
+
+sum(NonTwoStrikeNYY$pitch_type == "FF")
+32/293
+
+#CURVEBALL---------------------
+sum(TwoStrike$pitch_type == "CU")
+6/152
+
+sum(NonTwoStrike$pitch_type == "CU")
+16/421
+
+#CHANGEUP --------------
+sum(TwoStrike$pitch_type == "CH")
+27/152
+
+sum(NonTwoStrike$pitch_type == "CH")
+42/421
+
+sum(TwoStrikeNYY$pitch_type == "CH")
+12/94
+
+sum(NonTwoStrikeNYY$pitch_type == "CH")
+24/293
+```
+
+#Trivino Two Strike, Non-Two Strike Slider Maps || OAK and NYY
+```{r}
+#Two Strike Oakland
+TwoStrikeOAKSL <- filter(TwoStrike, pitch_type == "SL")
+
+SL2KOAK <- ggplot(TwoStrikeOAKSL,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK 2 Strike Slider Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+SL2KOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+#Two Strikes New York
+TwoStrikeNYYSL <- filter(TwoStrikeNYY, pitch_type == "SL")
+
+SL2KNYY <- ggplot(TwoStrikeNYYSL,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 NYY 2 Strike Slider Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+SL2KNYY + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+#Non-Two Strike Oakland
+NonTwoStrikeOAKSL <- filter(NonTwoStrike, pitch_type == "SL")
+
+SLNon2KOAK <- ggplot(NonTwoStrikeOAKSL,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 OAK Non-2 Strike Slider Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+SLNon2KOAK + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1)+ theme(legend.position = "none")
+
+#Non-Two Strike New York
+NonTwoStrikeNYYSL <- filter(NonTwoStrikeNYY, pitch_type == "SL")
+
+SLNon2KNYY <- ggplot(NonTwoStrikeNYYSL,aes(x=plate_x,y=plate_z)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = F)+
+  scale_fill_gradient(low = "blue", high = "red")+
+    xlim(c(2,-2)) +
+    ylim(c(0,5)) +
+    coord_fixed(0.8)+
+  labs(title = "Lou Trivino 2022 NYY Non-2 Strike Slider Heat Map",
+       subtitle = "Pitcher's Perspective",
+       caption = "Data: Baseball Savant | Riley Feltner",
+       x = "Horizontal Location", 
+       y = "Vertical Location")+
+  theme_minimal()
+
+SLNon2KNYY + annotate('rect', xmin = -0.85, xmax = 0.85, ymin = 1.6, ymax = 3.5, fill = 'black', color = 'black', alpha = 0.0001, size = 1) + theme(legend.position = "none")
+```
+
